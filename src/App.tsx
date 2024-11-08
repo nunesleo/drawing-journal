@@ -1,26 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import Home from './pages/Home';
+import DrawingPage from './pages/DrawingPage';
+import History from './pages/History';
+
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/draw" element={<DrawingPage />} />
+        <Route path="/history" element={<History />} />
+      </Routes>
+    </>
   );
 }
 
-export default App;
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
+export default AppWrapper;
