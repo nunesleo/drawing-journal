@@ -1,14 +1,20 @@
 import { Bar } from 'react-chartjs-2';
+
+//Importing data visualization elements to build the bar graph
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Register the required elements for Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-interface EmotionHistogramProps{
-    freqArray: number[];
+// Takes a array of frequencies for each emotion
+// The array has size equal to the amount of emotions
+// The value at each index is the count for each emotion
+// EmotionHistogram is called at AnalysisCard.tsx
+interface EmotionHistogramProps {
+  freqArray: number[];
 }
 
-const EmotionHistogram: React.FC<EmotionHistogramProps> = ({freqArray}) => {
+const EmotionHistogram: React.FC<EmotionHistogramProps> = ({ freqArray }) => {
   const data = {
     labels: ['Angry', 'Sad', 'Happy', 'Curious', 'Sick', 'Love'],
     datasets: [
@@ -32,7 +38,7 @@ const EmotionHistogram: React.FC<EmotionHistogramProps> = ({freqArray}) => {
     },
     scales: {
       y: { beginAtZero: true },
-      x: { grid: {display: false} }
+      x: { grid: { display: false } }
     }
   };
 

@@ -1,29 +1,30 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-import { v4 as uuidv4 } from "uuid"; 
+import { v4 as uuidv4 } from "uuid";
+
+//Importing Icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faEraser } from '@fortawesome/free-solid-svg-icons';
 
 //Importing firebase
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; 
-import { getFirestore, collection, addDoc, Timestamp } from "firebase/firestore"; 
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, addDoc, Timestamp } from "firebase/firestore";
 
 //Importing components
 import NavBar from '../components/NavBar';
 
 const DrawingPage: React.FC = () => {
   let isDrawing: boolean = false;
-  const [strokeColor, setStrokeColor] = useState('black'); // Set strokeColor as state
-  const [brushSize, setBrushSize] = useState(5); // Set brushSize as state
-  const navigate = useNavigate();
+  const [strokeColor, setStrokeColor] = useState('black');
+  const [brushSize, setBrushSize] = useState(5);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [emotion, setEmotion] = useState<number>(2); // Default emotion
+  const navigate = useNavigate();
 
-  
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -65,44 +66,40 @@ const DrawingPage: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const uuid = uuidv4(); // Generate a unique ID for this drawing
-    const updatedAt = Timestamp.now(); // Get the current timestamp
+    const uuid = uuidv4(); 
+    const updatedAt = Timestamp.now();
 
-    const storage = getStorage(); // Initialize Firebase Storage
-    const storageRef = ref(storage, `drawings/${uuid}.png`); // Create reference for the image
+    const storage = getStorage();
+    const storageRef = ref(storage, `drawings/${uuid}.png`);
 
-    // Convert canvas to Blob (PNG format)
     canvas.toBlob(async (blob) => {
       if (blob) {
         try {
-          // Upload the drawing to Firebase Storage
           await uploadBytes(storageRef, blob);
 
-          // Get the download URL for the uploaded image
           const drawingURL = await getDownloadURL(storageRef);
 
-          // Save metadata to Firestore
           const db = getFirestore();
           const metadata = {
             uuid,
             updatedAt,
             title,
             description,
-            emotion, // The emotion selected by the user
-            drawingURL // URL to the uploaded drawing
+            emotion,
+            drawingURL
           };
 
           await addDoc(collection(db, "drawings"), metadata);
 
           console.log("Drawing and metadata saved successfully");
-          navigate('/history'); // Redirect to history page
+          navigate('/history');
 
         } catch (error) {
           console.error("Failed to save drawing:", error);
           alert("Failed to save the drawing.");
         }
       }
-    }, 'image/png'); // Convert to PNG
+    }, 'image/png');
   };
 
   return (
@@ -115,20 +112,18 @@ const DrawingPage: React.FC = () => {
           </div>
           <div className="flex flex-row justify-center p-2 rounded-md shadow-md bg-white space-x-2">
             <button
-              className={`p-2 w-12 h-12 bg-white rounded-full shadow-md hover:bg-gray-100 ${
-                strokeColor === 'black' ? 'border-purple-600' : 'border-gray-100'
-              } border-2`}
+              className={`p-2 w-12 h-12 bg-white rounded-full shadow-md hover:bg-gray-100 ${strokeColor === 'black' ? 'border-purple-600' : 'border-gray-100'
+                } border-2`}
               onClick={() => changeStrokeColor('black', 5)}
             >
-              <FontAwesomeIcon icon={faPencilAlt}/>
+              <FontAwesomeIcon icon={faPencilAlt} />
             </button>
             <button
-              className={`p-2 w-12 h-12 bg-white rounded-full shadow-md hover:bg-gray-100 ${
-                strokeColor === 'white' ? 'border-purple-600' : 'border-gray-100'
-              } border-2`}
+              className={`p-2 w-12 h-12 bg-white rounded-full shadow-md hover:bg-gray-100 ${strokeColor === 'white' ? 'border-purple-600' : 'border-gray-100'
+                } border-2`}
               onClick={() => changeStrokeColor('white', 50)}
             >
-              <FontAwesomeIcon icon={faEraser}/>
+              <FontAwesomeIcon icon={faEraser} />
             </button>
           </div>
         </div>
